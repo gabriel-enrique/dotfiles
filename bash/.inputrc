@@ -1,3 +1,20 @@
-# ~/.inputrc - Readline configuration
-# Controls behavior and key bindings for interactive bash shells
-# Shared with other readline-enabled tools (psql, irb, etc.)
+# ~/.inputrc — readline configuration
+# Applies to bash and other readline-enabled tools (psql, irb, etc.)
+
+# Inherit any system-wide defaults
+$include /etc/inputrc
+
+# ── Completion ────────────────────────────────────────────────────────────────
+set completion-ignore-case on        # case-insensitive completion
+set completion-map-case on           # treat hyphens and underscores as equivalent
+set show-all-if-ambiguous on         # show options on first Tab (skip the double-Tab)
+set show-all-if-unmodified on        # ditto, but only when the line wasn't edited
+set colored-stats on                 # colorize completions using LS_COLORS
+set colored-completion-prefix on     # highlight the matched prefix in completions
+set visible-stats on                 # append type indicators (/ * @) like ls -F
+set mark-symlinked-directories on    # append / to symlinked directories
+set page-completions off             # don't paginate long completion lists
+set skip-completed-text on           # don't reinsert text already to the right of the cursor
+
+# ── Bell ──────────────────────────────────────────────────────────────────────
+set bell-style none                  # no beep on ambiguous completion / errors

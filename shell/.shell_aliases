@@ -1,0 +1,36 @@
+# ~/.shell_aliases — sourced by both bash and zsh
+
+# Detect ls color flag (GNU vs BSD)
+if ls --color=auto / >/dev/null 2>&1; then
+    __ls_color='--color=auto'
+else
+    __ls_color='-G'
+fi
+
+alias ls="ls -h $__ls_color"
+alias grep='grep --color=auto'
+
+unset __ls_color
+
+# Shorthands
+alias cl='clear'
+alias cls='clear'
+
+# Re-source shell config without opening a new terminal
+alias reload='exec "$SHELL" -l'
+
+# Make a directory and cd into it
+mkcd() { mkdir -p "$1" && cd "$1"; }
+
+# Show processes listening on TCP ports (GNU ss on Linux, lsof on BSD/macOS)
+if command -v ss >/dev/null 2>&1; then
+    alias ports='ss -tulpn'
+else
+    alias ports='lsof -iTCP -sTCP:LISTEN -P'
+fi
+
+# Search shell history: h <pattern>
+alias h='history | grep'
+
+# Navigation
+alias ..='cd ..'

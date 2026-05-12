@@ -15,8 +15,9 @@ HOME_DIR="$HOME"
 
 # Define available categories and their files to symlink
 declare -A CATEGORIES=(
-    [bash]=".bashrc .bash_profile .bash_aliases .bash_logout .inputrc"
-    [zsh]=".zshrc .zprofile .zsh_aliases"
+    [bash]=".bashrc .bash_profile .bash_prompt .bash_logout .inputrc"
+    [zsh]=".zshrc .zprofile .zsh_prompt"
+    [shell]=".shell_aliases"
     [git]=".gitconfig .gitignore_global"
     [nvim]=".config/nvim/init.lua"
     [vim]=".vimrc"

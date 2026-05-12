@@ -1,0 +1,25 @@
+# ~/.zsh_prompt — prompt configuration for zsh
+# Format:
+#   user@host ~/path (branch*)
+#   %
+
+setopt PROMPT_SUBST
+
+__git_prompt() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || \
+    branch=$(git rev-parse --short HEAD 2>/dev/null) || return
+
+    local dirty=""
+    if ! git diff --quiet --ignore-submodules HEAD 2>/dev/null; then
+        dirty="*"
+    elif [[ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]]; then
+        dirty="*"
+    fi
+
+    printf ' (%s%s)' "$branch" "$dirty"
+}
+
+# %F{color}…%f handles prompt-width counting in zsh
+PROMPT='%B%F{141}%n@%m%f %F{75}%~%f%F{213}$(__git_prompt)%f%b
+%# '

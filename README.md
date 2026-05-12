@@ -45,12 +45,13 @@ Install only specific categories:
 1. **Customize Your Configs**: Edit files in their respective directories:
    - `bash/.bashrc` — Bash interactive shell
    - `bash/.bash_profile` — Bash login shell
-   - `bash/.bash_aliases` — Bash aliases
+   - `bash/.bash_prompt` — Bash prompt (PS1) configuration
    - `bash/.bash_logout` — Bash logout actions
    - `bash/.inputrc` — Readline settings
    - `zsh/.zshrc` — Zsh interactive shell
    - `zsh/.zprofile` — Zsh login shell
-   - `zsh/.zsh_aliases` — Zsh aliases
+   - `zsh/.zsh_prompt` — Zsh prompt (PROMPT) configuration
+   - `shell/.shell_aliases` — Shared aliases sourced by both `bash` and `zsh`
    - `git/.gitconfig` — Git user settings and aliases
    - `git/.gitignore_global` — Global gitignore patterns
    - `nvim/.config/nvim/init.lua` — Neovim configuration
@@ -60,13 +61,32 @@ Install only specific categories:
 2. **Commit Changes**: Track your configurations with git:
    ```bash
    git add .
-   git commit -m "Update bash aliases"
+   git commit -m "Update shared aliases"
    ```
 
 3. **Deploy on New Machines**:
    - Clone this repository
    - Run `./install.sh`
    - Your configurations are ready to use
+
+## Per-Machine Overrides
+
+The `.bashrc` and `.zshrc` shipped here end by sourcing optional, untracked override files:
+
+```bash
+[ -f ~/.bashrc.local ] && . ~/.bashrc.local   # bash
+[ -f ~/.zshrc.local ] && . ~/.zshrc.local     # zsh
+```
+
+Use these for anything that should not live in version control or that varies between machines: API keys, work-specific PATH entries, hostname-specific aliases, tool integrations (e.g. `nvm`, `pyenv`) that are only installed on some machines.
+
+These files are not part of the repo. Create them by hand on each machine that needs them:
+
+```bash
+echo 'export OPENAI_API_KEY=...' >> ~/.bashrc.local
+```
+
+Anything cross-machine (e.g. `nvm` integration you use everywhere) is better placed directly in the tracked `.bashrc` / `.zshrc` with a `[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"` guard, so it's a no-op on machines without it.
 
 ## Backups
 
@@ -122,7 +142,9 @@ cp .backup/.bashrc.1715123456 ~/.bashrc
 To remove all symlinks and restore from backup:
 
 ```bash
-rm ~/.bashrc ~/.bash_profile ~/.bash_aliases ~/.zshrc ~/.gitconfig
+rm ~/.bashrc ~/.bash_profile ~/.bash_prompt ~/.bash_logout ~/.inputrc \
+   ~/.zshrc ~/.zprofile ~/.zsh_prompt \
+   ~/.shell_aliases ~/.gitconfig
 # Restore from .backup/ as needed
 ```
 
@@ -133,13 +155,15 @@ dotfiles/
 ├── bash/
 │   ├── .bashrc
 │   ├── .bash_profile
-│   ├── .bash_aliases
+│   ├── .bash_prompt
 │   ├── .bash_logout
 │   └── .inputrc
 ├── zsh/
 │   ├── .zshrc
 │   ├── .zprofile
-│   └── .zsh_aliases
+│   └── .zsh_prompt
+├── shell/
+│   └── .shell_aliases
 ├── git/
 │   ├── .gitconfig
 │   └── .gitignore_global

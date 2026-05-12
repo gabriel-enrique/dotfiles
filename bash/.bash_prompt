@@ -1,0 +1,27 @@
+# ~/.bash_prompt — prompt configuration for bash
+# Format:
+#   user@host ~/path (branch*)
+#   $
+
+__git_prompt() {
+    local branch
+    branch=$(git symbolic-ref --short HEAD 2>/dev/null) || \
+    branch=$(git rev-parse --short HEAD 2>/dev/null) || return
+
+    local dirty=""
+    if ! git diff --quiet --ignore-submodules HEAD 2>/dev/null; then
+        dirty="*"
+    elif [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
+        dirty="*"
+    fi
+
+    printf ' (%s%s)' "$branch" "$dirty"
+}
+
+# Colors wrapped in \[ \] so bash counts prompt width correctly
+__c_user='\[\e[1;38;5;40m\]'    # bold green
+__c_path='\[\e[1;38;5;208m\]'   # bold orange
+__c_git='\[\e[1;38;5;220m\]'    # bold gold
+__c_reset='\[\e[0m\]'
+
+PS1="${__c_user}\u@\h${__c_reset} ${__c_path}\w${__c_reset}${__c_git}\$(__git_prompt)${__c_reset}\n\$ "
