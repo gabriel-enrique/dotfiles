@@ -1,0 +1,3 @@
+-- ~/.config/nvim/init.lua - Neovim configuration
+-- This is the main configuration file for Neovim
+-- Add your neovim customizations here (plugins, keymaps, options, etc.)

@@ -1,0 +1,3 @@
+# ~/.inputrc - Readline configuration
+# Controls behavior and key bindings for interactive bash shells
+# Shared with other readline-enabled tools (psql, irb, etc.)

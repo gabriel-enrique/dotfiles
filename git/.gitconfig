@@ -1,0 +1,8 @@
+# ~/.gitconfig - Git configuration
+# Global git settings like user.name, user.email, and aliases
+[user]
+	# name = Your Name
+	# email = your.email@example.com
+
+# [alias]
+# Add your git aliases here

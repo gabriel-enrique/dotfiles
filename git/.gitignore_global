@@ -1,0 +1,11 @@
+# ~/.gitignore_global - Global git ignore patterns
+# Patterns in this file will be ignored across all git repositories
+# Configure git to use this file with: git config --global core.excludesfile ~/.gitignore_global
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
