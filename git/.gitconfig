@@ -1,8 +1,40 @@
 # ~/.gitconfig - Git configuration
-# Global git settings like user.name, user.email, and aliases
 [user]
-	# name = Your Name
-	# email = your.email@example.com
+	name = Gabriel Enrique
+	email = gabrielenrique.abel@gmail.com
 
-# [alias]
-# Add your git aliases here
+[init]
+	defaultBranch = master
+
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore_global
+
+[pull]
+	ff = only
+
+[push]
+	autoSetupRemote = true
+
+[fetch]
+	prune = true
+
+[commit]
+	verbose = true
+
+[merge]
+	conflictStyle = zdiff3
+
+[diff]
+	algorithm = histogram
+
+[color]
+	ui = auto
+
+[alias]
+	reword = "!f() { if [ $# -eq 0 ]; then git commit --amend; elif [ $# -eq 1 ]; then git commit --amend -m \"$1\"; else echo 'usage: git reword [\"message\"]' >&2; return 1; fi; }; f"
+	append = "!f() { [ $# -eq 0 ] || { echo 'usage: git append (no args)' >&2; return 1; }; git commit --amend --no-edit; }; f"
+	undo = "!f() { [ $# -eq 0 ] || { echo 'usage: git undo (no args)' >&2; return 1; }; git reset --soft HEAD~1; }; f"
+	staged = diff --staged
+	logg = log --oneline --graph --decorate --all
+	logv = log --graph --all --pretty=format:\"%h%d %s [%an (%ar)]\"

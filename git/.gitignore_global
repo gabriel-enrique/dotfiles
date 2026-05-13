@@ -8,4 +8,13 @@
 *.swp
 *.swo
 *~
+
+# macOS
 .DS_Store
+.Spotlight-V100
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+desktop.ini
