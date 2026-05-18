@@ -37,7 +37,7 @@
 	undo = "!f() { [ $# -eq 0 ] || { echo 'usage: git undo (no args)' >&2; return 1; }; git reset --soft HEAD~1; }; f"
 	staged = diff --staged
 	logg = log --oneline --graph --decorate --all
-	logv = log --graph --all --pretty=format:\"%h%d %s [%an (%ar)]\"
+	logv = log --graph --all --pretty=format:\"%C(auto)%h%C(auto)%d%Creset %s %C(green)[%an %C(blue)(%ar)%C(green)]%Creset\"
 
 # Per-machine overrides (not tracked). Missing file is a silent no-op.
 # Edit ~/.gitconfig.local by hand — do not use `git config --global`,
