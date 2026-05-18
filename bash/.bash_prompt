@@ -25,3 +25,14 @@ __c_git='\[\e[1;38;5;220m\]'    # bold gold
 __c_reset='\[\e[0m\]'
 
 PS1="${__c_user}\u@\h${__c_reset} ${__c_path}\w${__c_reset}${__c_git}\$(__git_prompt)${__c_reset}\n\$ "
+
+# Blank line between prompts (skipped on first prompt so shells open clean)
+__bp_first=1
+__bp_blank() {
+    if [ -n "$__bp_first" ]; then
+        __bp_first=
+    else
+        printf '\n'
+    fi
+}
+PROMPT_COMMAND="__bp_blank${PROMPT_COMMAND:+; $PROMPT_COMMAND}"

@@ -23,3 +23,10 @@ __git_prompt() {
 # %F{color}…%f handles prompt-width counting in zsh
 PROMPT='%B%F{141}%n@%m%f %F{75}%~%f%F{213}$(__git_prompt)%f%b
 %# '
+
+# Blank line between prompts (skipped on first prompt so shells open clean)
+__zp_first=1
+precmd() {
+    [[ -n $__zp_first ]] && { __zp_first=; return; }
+    print
+}
