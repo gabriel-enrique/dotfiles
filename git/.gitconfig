@@ -38,3 +38,9 @@
 	staged = diff --staged
 	logg = log --oneline --graph --decorate --all
 	logv = log --graph --all --pretty=format:\"%h%d %s [%an (%ar)]\"
+
+# Per-machine overrides (not tracked). Missing file is a silent no-op.
+# Edit ~/.gitconfig.local by hand — do not use `git config --global`,
+# since that writes through the symlink into the tracked file.
+[include]
+	path = ~/.gitconfig.local
