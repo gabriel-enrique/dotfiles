@@ -1,77 +1,32 @@
-# Dotfiles Repository
+# Dotfiles
 
-A centralized configuration management system for shell (Bash, Zsh), Git, editors (Neovim, Vim), and tmux.
+Personal configs for shell (Bash, Zsh), Git, editors (Neovim, Vim), and tmux. Installed via `install.sh`, which symlinks tracked files into `$HOME`.
 
-## Overview
-
-This repository contains dotfiles and configuration files that can be easily installed across different machines using the included `install.sh` script.
-
-## Supported Tools
-
-- **Shell**: Bash, Zsh
-- **Git**: Global configuration and ignore patterns
-- **Editors**: Neovim (init.lua), Vim (.vimrc)
-- **Multiplexer**: tmux
-
-## Installation
-
-### First-Time Setup
+## Install
 
 ```bash
-cd dotfiles
-chmod +x install.sh
-./install.sh
+./install.sh                 # everything
+./install.sh bash git        # selected categories
+./install.sh --list          # show categories
 ```
 
-This will symlink all configuration files from the repository to your home directory.
+Re-running is safe: existing symlinks are skipped, real files get backed up under `.backup/<name>.<timestamp>` before being replaced.
 
-### Selective Installation
+## What's tracked
 
-Install only specific categories:
+| Path | Symlinked to |
+|---|---|
+| `bash/.bashrc`, `.bash_profile`, `.bash_prompt`, `.bash_logout`, `.inputrc` | `~/` |
+| `zsh/.zshrc`, `.zprofile`, `.zsh_prompt` | `~/` |
+| `shell/.shell_aliases` | `~/` — sourced by both bash and zsh |
+| `git/.gitconfig`, `.gitignore_global` | `~/` |
+| `nvim/.config/nvim/init.lua` | `~/.config/nvim/init.lua` |
+| `vim/.vimrc` | `~/` |
+| `tmux/.tmux.conf` | `~/` |
 
-```bash
-./install.sh bash git              # Install bash and git only
-./install.sh nvim                  # Install neovim only
-```
+## Per-machine overrides
 
-### View Available Categories
-
-```bash
-./install.sh --list
-```
-
-## Usage
-
-1. **Customize Your Configs**: Edit files in their respective directories:
-   - `bash/.bashrc` — Bash interactive shell
-   - `bash/.bash_profile` — Bash login shell
-   - `bash/.bash_prompt` — Bash prompt (PS1) configuration
-   - `bash/.bash_logout` — Bash logout actions
-   - `bash/.inputrc` — Readline settings
-   - `zsh/.zshrc` — Zsh interactive shell
-   - `zsh/.zprofile` — Zsh login shell
-   - `zsh/.zsh_prompt` — Zsh prompt (PROMPT) configuration
-   - `shell/.shell_aliases` — Shared aliases sourced by both `bash` and `zsh`
-   - `git/.gitconfig` — Git user settings and aliases
-   - `git/.gitignore_global` — Global gitignore patterns
-   - `nvim/.config/nvim/init.lua` — Neovim configuration
-   - `vim/.vimrc` — Vim configuration
-   - `tmux/.tmux.conf` — Tmux configuration
-
-2. **Commit Changes**: Track your configurations with git:
-   ```bash
-   git add .
-   git commit -m "Update shared aliases"
-   ```
-
-3. **Deploy on New Machines**:
-   - Clone this repository
-   - Run `./install.sh`
-   - Your configurations are ready to use
-
-## Per-Machine Overrides
-
-The tracked configs end by sourcing or including optional, untracked `.local` counterparts that live in `$HOME` (not in this repo):
+Tracked configs end by sourcing or including an optional `.local` counterpart in `$HOME`. Use these for anything that shouldn't be in version control or varies per machine: API keys, host-specific PATH entries, tool integrations only installed on some boxes (`nvm`, `pyenv`, `conda`, `rbenv`, `sdkman`), per-host git identity.
 
 | Tracked file | Per-machine override | Mechanism |
 |---|---|---|
@@ -79,15 +34,7 @@ The tracked configs end by sourcing or including optional, untracked `.local` co
 | `~/.zshrc` | `~/.zshrc.local` | sourced if present |
 | `~/.gitconfig` | `~/.gitconfig.local` | `[include]` — silently ignored if missing |
 
-Use the `.local` files for anything that should not live in version control or that varies between machines: API keys, work-specific PATH entries, hostname-specific aliases, tool integrations (e.g. `nvm`, `pyenv`, `conda`, `rbenv`, `sdkman`) that are only installed on some machines, and per-host git identity (work email, signing keys).
-
-These files are not part of the repo. Create them by hand on each machine that needs them:
-
-```bash
-echo 'export OPENAI_API_KEY=...' >> ~/.bashrc.local
-```
-
-Example `~/.gitconfig.local`:
+Create them by hand on each machine that needs them. Example `~/.gitconfig.local`:
 
 ```ini
 [user]
@@ -99,117 +46,32 @@ Example `~/.gitconfig.local`:
 
 ### Gotcha: tools that write to your rc files
 
-Two common cases will dirty the dotfiles repo working tree, because `~/.bashrc`, `~/.zshrc`, and `~/.gitconfig` are symlinks into it:
+Because `~/.bashrc`, `~/.zshrc`, and `~/.gitconfig` are symlinks into this repo, two common cases will dirty the working tree:
 
-1. **Shell tool installers** (nvm, pyenv, conda, rbenv, sdkman) typically append a setup block to `~/.bashrc` / `~/.zshrc`. That write follows the symlink into the tracked file.
-2. **`git config --global ...`** writes to `~/.gitconfig`, also following the symlink into the tracked file. Easy to do by accident from any tutorial.
+1. **Shell tool installers** (nvm, pyenv, conda, rbenv, sdkman) append a setup block to `~/.bashrc` / `~/.zshrc`. The write follows the symlink into the tracked file.
+2. **`git config --global ...`** writes to `~/.gitconfig`, also through the symlink.
 
-**Procedure when this happens:**
+When it happens:
 
 ```bash
-cd ~/dotfiles
 git status                       # see what got dirtied
-# copy the added lines into the matching .local file:
+# move the added lines into the matching .local file:
 #   bash/.bashrc      → ~/.bashrc.local
 #   zsh/.zshrc        → ~/.zshrc.local
 #   git/.gitconfig    → ~/.gitconfig.local
 git restore <file>               # discard the change in the tracked file
 ```
 
-Always check `git status` in the repo after running a tool installer or pasting a `git config --global` from a tutorial.
+Always check `git status` after running a tool installer or pasting a `git config --global` line from a tutorial.
 
-## Backups
+## Restoring
 
-The installer automatically backs up existing configuration files before creating symlinks. Backups are stored in `.backup/` with timestamps:
-
-```
-.backup/
-├── .bashrc.1715123456
-├── .vimrc.1715123457
-└── ...
-```
-
-## Notes on Portability
-
-**Current Location**: This repository is currently at `/opt/mediakernels/vibecode/groups/gabriel/dotfiles`, which is machine-specific and version-controlled within the vibecode project.
-
-**For True Cross-Machine Portability**, consider:
-1. Moving the repository to `~/dotfiles` on each machine
-2. Hosting on GitHub and cloning there
-3. Using the `install.sh` script from any location to symlink to your home directory
-
-Example portable setup:
-```bash
-# Clone to home directory
-git clone https://github.com/yourusername/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-./install.sh
-```
-
-## Idempotency
-
-The `install.sh` script is safe to run multiple times. It will:
-- Skip files that are already correctly symlinked
-- Back up any existing files that aren't symlinks
-- Report all actions taken
-
-## Troubleshooting
-
-### Symlink Conflicts
-
-If you get errors about existing files, the installer will back them up:
-
-```bash
-# Check what was backed up
-ls -la .backup/
-
-# Restore from backup if needed
-cp .backup/.bashrc.1715123456 ~/.bashrc
-```
-
-### Unlinking All Configs
-
-To remove all symlinks and restore from backup:
+To unlink everything and recover originals:
 
 ```bash
 rm ~/.bashrc ~/.bash_profile ~/.bash_prompt ~/.bash_logout ~/.inputrc \
    ~/.zshrc ~/.zprofile ~/.zsh_prompt \
-   ~/.shell_aliases ~/.gitconfig
-# Restore from .backup/ as needed
+   ~/.shell_aliases ~/.gitconfig ~/.gitignore_global \
+   ~/.vimrc ~/.tmux.conf
+# then copy back from .backup/ as needed
 ```
-
-## Directory Structure
-
-```
-dotfiles/
-├── bash/
-│   ├── .bashrc
-│   ├── .bash_profile
-│   ├── .bash_prompt
-│   ├── .bash_logout
-│   └── .inputrc
-├── zsh/
-│   ├── .zshrc
-│   ├── .zprofile
-│   └── .zsh_prompt
-├── shell/
-│   └── .shell_aliases
-├── git/
-│   ├── .gitconfig
-│   └── .gitignore_global
-├── nvim/
-│   └── .config/nvim/
-│       └── init.lua
-├── vim/
-│   ├── .vimrc
-│   └── .vim/
-├── tmux/
-│   └── .tmux.conf
-├── install.sh
-├── README.md
-└── .backup/          # Auto-generated by installer
-```
-
-## License
-
-Customizable for personal use. Adjust or share as needed.
