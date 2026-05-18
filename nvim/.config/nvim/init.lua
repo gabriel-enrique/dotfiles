@@ -36,7 +36,8 @@ vim.opt.mouse = ""
 vim.opt.list = true
 vim.opt.listchars = { trail = "·", nbsp = "␣" }
 
-vim.cmd.colorscheme("retrobox")
+-- retrobox is a built-in colorscheme since nvim 0.10; fall back silently on older versions.
+pcall(vim.cmd.colorscheme, "retrobox")
 
 -- Keymaps
 local map = vim.keymap.set
