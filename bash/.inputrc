@@ -5,16 +5,27 @@
 $include /etc/inputrc
 
 # ── Completion ────────────────────────────────────────────────────────────────
-set completion-ignore-case on        # case-insensitive completion
-set completion-map-case on           # treat hyphens and underscores as equivalent
-set show-all-if-ambiguous on         # show options on first Tab (skip the double-Tab)
-set show-all-if-unmodified on        # ditto, but only when the line wasn't edited
-set colored-stats on                 # colorize completions using LS_COLORS
-set colored-completion-prefix on     # highlight the matched prefix in completions
-set visible-stats on                 # append type indicators (/ * @) like ls -F
-set mark-symlinked-directories on    # append / to symlinked directories
-set page-completions off             # don't paginate long completion lists
-set skip-completed-text on           # don't reinsert text already to the right of the cursor
+#   completion-ignore-case      -- case-insensitive matching
+#   completion-map-case         -- treating - and _ as equivalent
+#   show-all-if-ambiguous       -- showing all matches on first Tab
+#   show-all-if-unmodified      -- same, when the line hasn't been edited
+#   colored-stats               -- coloring completions via LS_COLORS
+#   colored-completion-prefix   -- highlighting the matched prefix
+#   visible-stats               -- type indicators (/ * @) like ls -F
+#   mark-symlinked-directories  -- trailing / on symlinked directories
+#   page-completions            -- pagination of long lists
+#   skip-completed-text         -- skipping text already right of the cursor
+set completion-ignore-case on
+set completion-map-case on
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+set colored-stats on
+set colored-completion-prefix on
+set visible-stats on
+set mark-symlinked-directories on
+set page-completions off
+set skip-completed-text on
 
 # ── Bell ──────────────────────────────────────────────────────────────────────
-set bell-style none                  # no beep on ambiguous completion / errors
+#   bell-style  -- audible bell on ambiguous completion / errors
+set bell-style none
