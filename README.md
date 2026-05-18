@@ -71,14 +71,15 @@ Install only specific categories:
 
 ## Per-Machine Overrides
 
-The `.bashrc` and `.zshrc` shipped here end by sourcing optional, untracked override files:
+The tracked configs end by sourcing or including optional, untracked `.local` counterparts that live in `$HOME` (not in this repo):
 
-```bash
-[ -f ~/.bashrc.local ] && . ~/.bashrc.local   # bash
-[ -f ~/.zshrc.local ] && . ~/.zshrc.local     # zsh
-```
+| Tracked file | Per-machine override | Mechanism |
+|---|---|---|
+| `~/.bashrc` | `~/.bashrc.local` | sourced if present |
+| `~/.zshrc` | `~/.zshrc.local` | sourced if present |
+| `~/.gitconfig` | `~/.gitconfig.local` | `[include]` — silently ignored if missing |
 
-Use these for anything that should not live in version control or that varies between machines: API keys, work-specific PATH entries, hostname-specific aliases, tool integrations (e.g. `nvm`, `pyenv`) that are only installed on some machines.
+Use the `.local` files for anything that should not live in version control or that varies between machines: API keys, work-specific PATH entries, hostname-specific aliases, tool integrations (e.g. `nvm`, `pyenv`, `conda`, `rbenv`, `sdkman`) that are only installed on some machines, and per-host git identity (work email, signing keys).
 
 These files are not part of the repo. Create them by hand on each machine that needs them:
 
@@ -86,7 +87,36 @@ These files are not part of the repo. Create them by hand on each machine that n
 echo 'export OPENAI_API_KEY=...' >> ~/.bashrc.local
 ```
 
-Anything cross-machine (e.g. `nvm` integration you use everywhere) is better placed directly in the tracked `.bashrc` / `.zshrc` with a `[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"` guard, so it's a no-op on machines without it.
+Example `~/.gitconfig.local`:
+
+```ini
+[user]
+    email = work@example.com
+    signingkey = ABCD1234
+[commit]
+    gpgsign = true
+```
+
+### Gotcha: tools that write to your rc files
+
+Two common cases will dirty the dotfiles repo working tree, because `~/.bashrc`, `~/.zshrc`, and `~/.gitconfig` are symlinks into it:
+
+1. **Shell tool installers** (nvm, pyenv, conda, rbenv, sdkman) typically append a setup block to `~/.bashrc` / `~/.zshrc`. That write follows the symlink into the tracked file.
+2. **`git config --global ...`** writes to `~/.gitconfig`, also following the symlink into the tracked file. Easy to do by accident from any tutorial.
+
+**Procedure when this happens:**
+
+```bash
+cd ~/dotfiles
+git status                       # see what got dirtied
+# copy the added lines into the matching .local file:
+#   bash/.bashrc      → ~/.bashrc.local
+#   zsh/.zshrc        → ~/.zshrc.local
+#   git/.gitconfig    → ~/.gitconfig.local
+git restore <file>               # discard the change in the tracked file
+```
+
+Always check `git status` in the repo after running a tool installer or pasting a `git config --global` from a tutorial.
 
 ## Backups
 
