@@ -30,7 +30,13 @@ else
 fi
 
 # Search shell history: h <pattern>
-alias h='history | grep'
+# zsh's `history` shows only the last 16 entries; `history 1` starts at event 1.
+# bash reads the same argument as a count, where `history 1` means the last line.
+if [ -n "$ZSH_VERSION" ]; then
+    alias h='history 1 | grep'
+else
+    alias h='history | grep'
+fi
 
 # Navigation
 alias ..='cd ..'
