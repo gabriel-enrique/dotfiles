@@ -18,6 +18,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$SCRIPT_DIR/.backup"
 HOME_DIR="$HOME"
 FORCE=false
+FAILED=0
 
 # Define available categories and their files to symlink
 declare -A CATEGORIES=(
@@ -113,9 +114,12 @@ install_category() {
         local target="$HOME_DIR/$file"
         local target_dir=$(dirname "$target")
 
-        # Check if source exists
+        # Check if source exists. Record the skip so the run cannot report
+        # success afterwards. Plain assignment, not ((FAILED++)), which
+        # returns non-zero on the first increment and would trip set -e.
         if [[ ! -e "$source" ]]; then
             print_error "Source file not found: $source"
+            FAILED=$((FAILED + 1))
             continue
         fi
 
@@ -185,10 +189,17 @@ main() {
     done
 
     echo ""
-    print_info "Installation complete!"
+    if [[ $FAILED -gt 0 ]]; then
+        print_error "Installation incomplete: $FAILED file(s) missing from $SCRIPT_DIR"
+    else
+        print_info "Installation complete!"
+    fi
+
     if [[ -d "$BACKUP_DIR" ]]; then
         print_info "Backups saved to: $BACKUP_DIR"
     fi
+
+    [[ $FAILED -eq 0 ]] || exit 1
 }
 
 main "$@"
