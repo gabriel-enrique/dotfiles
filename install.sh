@@ -5,13 +5,19 @@
 #   ./install.sh              # Install all categories
 #   ./install.sh bash git     # Install only bash and git
 #   ./install.sh --list       # Show available categories
+#   ./install.sh --force      # Repoint symlinks owned by another checkout
 #   ./install.sh --help       # Show this help message
+#
+# Symlinks already pointing at a different checkout are reported and left
+# alone, so running this from a development clone cannot silently take over
+# the dotfiles in use. Pass --force to repoint them on purpose.
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$SCRIPT_DIR/.backup"
 HOME_DIR="$HOME"
+FORCE=false
 
 # Define available categories and their files to symlink
 declare -A CATEGORIES=(
@@ -67,6 +73,30 @@ create_backup() {
     fi
 }
 
+# Report targets that are symlinks into a different checkout. Repointing them
+# would move the dotfiles in use to this clone, so it has to be asked for.
+check_conflicts() {
+    local conflicts=()
+
+    for category in "${SELECTED_CATEGORIES[@]}"; do
+        for file in ${CATEGORIES[$category]}; do
+            local source="$SCRIPT_DIR/$category/$file"
+            local target="$HOME_DIR/$file"
+
+            if [[ -L "$target" && "$(readlink "$target")" != "$source" ]]; then
+                conflicts+=("$target → $(readlink "$target")")
+            fi
+        done
+    done
+
+    if [[ ${#conflicts[@]} -gt 0 ]]; then
+        print_error "${#conflicts[@]} file(s) already point at another checkout:"
+        printf '        %s\n' "${conflicts[@]}"
+        print_error "Re-run with --force to repoint them at $SCRIPT_DIR"
+        return 1
+    fi
+}
+
 install_category() {
     local category="$1"
     local files="${CATEGORIES[$category]}"
@@ -105,13 +135,6 @@ install_category() {
 }
 
 main() {
-    if [[ $# -eq 0 ]]; then
-        # No arguments: install all categories
-        INSTALL_ALL=true
-    else
-        INSTALL_ALL=false
-    fi
-
     # Process arguments
     for arg in "$@"; do
         case "$arg" in
@@ -123,8 +146,8 @@ main() {
                 list_categories
                 exit 0
                 ;;
-            --backup)
-                # Default behavior, no action needed
+            --force|-f)
+                FORCE=true
                 ;;
             *)
                 if [[ -n "${CATEGORIES[$arg]}" ]]; then
@@ -137,14 +160,14 @@ main() {
         esac
     done
 
-    # Determine what to install
-    if [[ "$INSTALL_ALL" == true ]]; then
+    # No category named: install all of them. Flags alone still mean "all",
+    # so `--force` on its own works the same as a bare run.
+    if [[ ${#SELECTED_CATEGORIES[@]} -eq 0 ]]; then
         SELECTED_CATEGORIES=("${!CATEGORIES[@]}")
     fi
 
-    if [[ ${#SELECTED_CATEGORIES[@]} -eq 0 ]]; then
-        print_error "No categories selected"
-        exit 1
+    if [[ "$FORCE" != true ]]; then
+        check_conflicts || exit 1
     fi
 
     echo "Dotfiles installation starting..."
