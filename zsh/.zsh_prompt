@@ -32,9 +32,15 @@ __git_prompt() {
 PROMPT='%B%F{141}%n@%m%f %F{75}%~%f%F{213}$(__git_prompt)%f%b
 %# '
 
-# Blank line between prompts (skipped on first prompt so shells open clean)
+# Blank line between prompts (skipped on first prompt so shells open clean).
+# Registered as a hook rather than defined as precmd(): that name is a single
+# slot, so anything sourced later -- a tool loaded from ~/.zshrc.local, say --
+# would silently take it over and the blank line would just stop appearing.
+# Hook functions run in addition to whatever holds the slot.
 __zp_first=1
-precmd() {
+__zp_blank() {
     [[ -n $__zp_first ]] && { __zp_first=; return; }
     print
 }
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd __zp_blank
