@@ -54,7 +54,12 @@ set list
 set listchars=trail:·,nbsp:␣
 
 " Keymaps
-nnoremap <silent> <Esc> :nohlsearch<CR>
+" <C-l> here, where the nvim config uses <Esc>. Terminfo sends Up as ESC O A,
+" so mapping <Esc> in normal mode makes vim take the mapping and then read the
+" O as "open a line above and insert" -- arrow keys corrupt the buffer, and not
+" only over a slow link. Neovim parses the sequence properly and is unaffected.
+" <C-l> redraws as well, which is its traditional job.
+nnoremap <silent> <C-l> :nohlsearch<CR><C-l>
 vnoremap < <gv
 vnoremap > >gv
 
