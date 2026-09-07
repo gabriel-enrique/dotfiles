@@ -66,11 +66,14 @@ print_error() {
 create_backup() {
     local target="$1"
     if [[ -e "$target" && ! -L "$target" ]]; then
-        mkdir -p "$BACKUP_DIR"
-        local filename=$(basename "$target")
-        local backup_file="$BACKUP_DIR/$filename.$(date +%s)"
+        # Keep the path the file had under $HOME, so ~/.config/nvim/init.lua
+        # backs up to .backup/.config/nvim/init.lua.<epoch>. A basename alone
+        # would collide as soon as two categories tracked the same filename.
+        local relative="${target#"$HOME_DIR"/}"
+        local backup_file="$BACKUP_DIR/$relative.$(date +%s)"
+        mkdir -p "$(dirname "$backup_file")"
         mv "$target" "$backup_file"
-        print_warn "Backed up existing $filename to $backup_file"
+        print_warn "Backed up existing $relative to $backup_file"
     fi
 }
 
