@@ -66,12 +66,10 @@ Always check `git status` after running a tool installer or pasting a `git confi
 
 ## Restoring
 
-To unlink everything and recover originals:
+Remove the symlinks for the categories you installed — the paths are in the
+table above — then copy back what you need from `.backup/`:
 
 ```bash
-rm ~/.bashrc ~/.bash_profile ~/.bash_prompt ~/.bash_logout ~/.inputrc \
-   ~/.zshrc ~/.zprofile ~/.zsh_prompt \
-   ~/.shell_aliases ~/.gitconfig ~/.gitignore_global \
-   ~/.vimrc ~/.tmux.conf
-# then copy back from .backup/ as needed
+rm ~/.bashrc ~/.bash_profile ~/.bash_prompt ~/.bash_logout ~/.inputrc  # bash
+rm ~/.config/nvim/init.lua                                             # nvim
 ```
