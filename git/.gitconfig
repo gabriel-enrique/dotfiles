@@ -7,7 +7,11 @@
 	defaultBranch = master
 
 [core]
-	editor = nvim
+	# No editor here on purpose. core.editor outranks $EDITOR, so setting it
+	# would override the `command -v nvim` guard in .shell_aliases and break
+	# `git commit` on a machine without nvim. Letting $EDITOR decide keeps one
+	# source of truth; with nothing set git uses its build default (`editor`,
+	# the update-alternatives wrapper, on Debian and Ubuntu; `vi` elsewhere).
 	excludesfile = ~/.gitignore_global
 
 [pull]
