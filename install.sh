@@ -31,7 +31,10 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 print_help() {
-    head -15 "$0"
+    # Print the header comment block as help text: skip the shebang, strip the
+    # leading "# ", and stop at the first line that is not a comment, so the
+    # help can never drift into printing code the way a fixed line count did.
+    awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"
 }
 
 list_categories() {
