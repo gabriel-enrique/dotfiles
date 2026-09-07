@@ -16,8 +16,16 @@ unset __ls_color
 alias cl='clear'
 alias cls='clear'
 
-# Re-source shell config without opening a new terminal
-alias reload='exec "$SHELL" -l'
+# Re-source shell config without opening a new terminal.
+# Replace the running shell, not $SHELL -- that names the login shell from
+# /etc/passwd, so `reload` in zsh under a bash login would land you in bash.
+# Non-login on purpose: the environment survives exec, so re-running the
+# profile would only re-prepend PATH entries that are already there.
+if [ -n "$ZSH_VERSION" ]; then
+    alias reload='exec zsh'
+else
+    alias reload='exec bash'
+fi
 
 # Make a directory and cd into it
 mkcd() { mkdir -p "$1" && cd "$1"; }
