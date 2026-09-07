@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Dotfiles installation script
 # Creates symlinks from ~ to dotfiles repository
 # Usage: ./install.sh [categories...]
@@ -8,11 +8,22 @@
 #   ./install.sh --force      # Repoint symlinks owned by another checkout
 #   ./install.sh --help       # Show this help message
 #
+# Requires bash 4+ (macOS ships 3.2; brew install bash).
+#
 # Symlinks already pointing at a different checkout are reported and left
 # alone, so running this from a development clone cannot silently take over
 # the dotfiles in use. Pass --force to repoint them on purpose.
 
 set -e
+
+# CATEGORIES below is an associative array, which needs bash 4. macOS ships
+# bash 3.2 as /bin/bash, so say so plainly rather than failing on a `declare`
+# error 10 lines later. Uses no bash 4 syntax itself, so 3.2 reaches it.
+if [[ ${BASH_VERSINFO[0]:-0} -lt 4 ]]; then
+    echo "install.sh requires bash 4 or newer (found ${BASH_VERSION:-unknown})" >&2
+    echo "On macOS: brew install bash" >&2
+    exit 1
+fi
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="$SCRIPT_DIR/.backup"
