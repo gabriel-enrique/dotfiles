@@ -1,5 +1,14 @@
 -- ~/.config/nvim/init.lua - Neovim configuration
 
+-- vim.keymap.set below arrived in 0.7. Say so once, rather than erroring
+-- partway through and leaving half the settings applied. This cannot help
+-- below 0.5, where neovim does not read init.lua at all -- there the only
+-- symptom is stock defaults, so check `nvim --version` on an unfamiliar box.
+if vim.fn.has("nvim-0.7") == 0 then
+  vim.notify("dotfiles: this config needs neovim 0.7 or newer", vim.log.levels.WARN)
+  return
+end
+
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
