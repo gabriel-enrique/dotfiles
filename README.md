@@ -32,6 +32,8 @@ Tracked configs end by sourcing or including an optional `.local` counterpart in
 |---|---|---|
 | `~/.bashrc` | `~/.bashrc.local` | sourced if present |
 | `~/.zshrc` | `~/.zshrc.local` | sourced if present |
+| `~/.bash_profile` | `~/.bash_profile.local` | sourced if present — login shells only |
+| `~/.zprofile` | `~/.zprofile.local` | sourced if present — login shells only |
 | `~/.gitconfig` | `~/.gitconfig.local` | `[include]` — silently ignored if missing |
 
 Create them by hand on each machine that needs them. Example `~/.gitconfig.local`:
@@ -46,9 +48,9 @@ Create them by hand on each machine that needs them. Example `~/.gitconfig.local
 
 ### Gotcha: tools that write to your rc files
 
-Because `~/.bashrc`, `~/.zshrc`, and `~/.gitconfig` are symlinks into this repo, two common cases will dirty the working tree:
+Because every tracked file is a symlink into this repo, two common cases will dirty the working tree:
 
-1. **Shell tool installers** (nvm, pyenv, conda, rbenv, sdkman) append a setup block to `~/.bashrc` / `~/.zshrc`. The write follows the symlink into the tracked file.
+1. **Shell tool installers** (nvm, pyenv, conda, rbenv, sdkman, uv) append a setup block to `~/.bashrc`, `~/.zshrc`, or `~/.bash_profile`. The write follows the symlink into the tracked file.
 2. **`git config --global ...`** writes to `~/.gitconfig`, also through the symlink.
 
 When it happens:
@@ -56,9 +58,11 @@ When it happens:
 ```bash
 git status                       # see what got dirtied
 # move the added lines into the matching .local file:
-#   bash/.bashrc      → ~/.bashrc.local
-#   zsh/.zshrc        → ~/.zshrc.local
-#   git/.gitconfig    → ~/.gitconfig.local
+#   bash/.bashrc        → ~/.bashrc.local
+#   bash/.bash_profile  → ~/.bash_profile.local
+#   zsh/.zshrc          → ~/.zshrc.local
+#   zsh/.zprofile       → ~/.zprofile.local
+#   git/.gitconfig      → ~/.gitconfig.local
 git restore <file>               # discard the change in the tracked file
 ```
 

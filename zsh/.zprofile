@@ -3,4 +3,8 @@
 # so this file is reserved for things that should run exactly once per login
 # (e.g. one-shot environment exports, ssh-agent bootstrap).
 #
-# Most setups leave this empty.
+# Nothing tracked belongs here; the one line below just gives installers that
+# write to a login profile somewhere to be moved to.
+
+# Per-machine login-only overrides (not tracked in dotfiles)
+[ -f ~/.zprofile.local ] && . ~/.zprofile.local

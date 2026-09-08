@@ -5,3 +5,8 @@
 [ -f ~/.bashrc ] && . ~/.bashrc
 
 # Login-only configuration goes below this line (rare; usually empty).
+
+# Per-machine login-only overrides (not tracked in dotfiles). Installers that
+# append a PATH export tend to pick this file, so give that a home outside the
+# repository.
+[ -f ~/.bash_profile.local ] && . ~/.bash_profile.local
