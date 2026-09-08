@@ -8,9 +8,15 @@ Personal configs for shell (Bash, Zsh), Git, editors (Neovim, Vim), and tmux. In
 ./install.sh                 # everything
 ./install.sh bash git        # selected categories
 ./install.sh --list          # show categories
+./install.sh --force         # repoint symlinks owned by another checkout
+./install.sh --help          # usage
 ```
 
-Re-running is safe: existing symlinks are skipped, real files get backed up under `.backup/<name>.<timestamp>` before being replaced.
+Requires bash 4+ (macOS ships 3.2 — `brew install bash`).
+
+Re-running is safe. Links already pointing into this repo are recreated in place; a real file is moved aside first, keeping the path it had under `~`, so `~/.config/nvim/init.lua` is backed up to `.backup/.config/nvim/init.lua.<timestamp>`.
+
+If a target is a symlink into a *different* checkout, the run stops before writing anything and lists them. That guards against a development clone silently taking over the dotfiles in use — pass `--force` to repoint them deliberately.
 
 ## What's tracked
 
@@ -26,7 +32,7 @@ Re-running is safe: existing symlinks are skipped, real files get backed up unde
 
 ## Per-machine overrides
 
-Tracked configs end by sourcing or including an optional `.local` counterpart in `$HOME`. Use these for anything that shouldn't be in version control or varies per machine: API keys, host-specific PATH entries, tool integrations only installed on some boxes (`nvm`, `pyenv`, `conda`, `rbenv`, `sdkman`), per-host git identity.
+The shell and git configs end by sourcing or including an optional `.local` counterpart in `$HOME`. Use these for anything that shouldn't be in version control or varies per machine: API keys, host-specific PATH entries, tool integrations only installed on some boxes (`nvm`, `pyenv`, `conda`, `rbenv`, `sdkman`), per-host git identity.
 
 | Tracked file | Per-machine override | Mechanism |
 |---|---|---|
