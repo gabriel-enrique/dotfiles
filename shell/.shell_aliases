@@ -30,6 +30,10 @@ fi
 # Make a directory and cd into it
 mkcd() { mkdir -p "$1" && cd "$1"; }
 
+# Open a tmux session named after the current directory, or rejoin it.
+# tmux rejects '.' and ':' in session names, so swap them for '_'.
+alias tns='tmux new -A -s "$(basename "$PWD" | tr .: __)"'
+
 # Show processes listening on TCP ports (GNU ss on Linux, lsof on BSD/macOS)
 if command -v ss >/dev/null 2>&1; then
     alias ports='ss -tulpn'
